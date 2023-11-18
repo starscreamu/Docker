@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  web:
+    image: ${DOCKER_REGISTRY}/${CI_PROJECT_PATH}:main
+    volumes:
+      - /etc/nginx/prod/${CI_PROJECT_NAMESPACE}:/usr/src/${PROJECT_NAME}/static
+    env_file: prod.env
+    command: ["${PROJECT_NAME}.wsgi:application"]
+    networks:
+      default:
+        ipv4_address: 172.21.0.3
+    expose:
+      - 8000
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  test:
+    image: ${IMAGE_NAME}
+    volumes:
+      - /etc/nginx/test/${CI_PROJECT_NAMESPACE}:/usr/src/${PROJECT_NAME}/static
+    command: ["${PROJECT_NAME}.wsgi:application"]
+    networks:
+      default:
+        ipv4_address: 172.21.0.4
+    expose:
+      - 8000
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      default:
+        ipv4_address: 172.21.0.2
+    expose: 
+      - 5432
+    env_file: prod.env
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: default_$CI_PROJECT_NAMESPACE
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1
