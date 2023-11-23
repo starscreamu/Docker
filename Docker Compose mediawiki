@@ -1,2 +1,32 @@
 https://hub.docker.com/_/mediawiki
 docker compose -f wiki.yml up 
+
+docker run --name some-mediawiki -p 8080:80 -d mediawiki
+docker run --name some-mediawiki --link some-mysql:mysql -d mediawiki
+docker run --rm mediawiki tar -cC /var/www/html/sites . | tar -xC /path/on/host/sites
+
+nano wiki.yml
+
+version: '3'
+services:
+  mediawiki:
+    image: mediawiki
+    restart: always
+    ports:
+      - 8080:80
+    links:
+      - database
+    volumes:
+      - images:/var/www/html/images
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: my_wiki
+      MYSQL_USER: wikiuser
+      MYSQL_PASSWORD: example
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - db:/var/lib/mysql
+volumes:
+  images:
+  db:
