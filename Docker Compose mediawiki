@@ -1,5 +1,5 @@
 https://hub.docker.com/_/mediawiki
-docker compose -f wiki.yml up 
+docker compose -f wiki.yml up -d
 
 docker run --name some-mediawiki -p 8080:80 -d mediawiki
 docker run --name some-mediawiki --link some-mysql:mysql -d mediawiki
