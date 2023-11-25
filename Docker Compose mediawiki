@@ -1,4 +1,4 @@
-https://hub.docker.com/_/mediawiki
+pshttps://hub.docker.com/_/mediawiki
 docker compose -f wiki.yml up -d
 
 docker run --name some-mediawiki -p 8080:80 -d mediawiki
@@ -43,8 +43,8 @@ services:
       - 8080:80
     volumes:
       - images:/var/www/html/images
-      - ./LocalSettings.php:/var/www/html/LocalSettings.php
-  db:
+      #- ./LocalSettings.php:/var/www/html/LocalSettings.php
+  db:                                                           #Host of this db
     container_name: db
     image: mysql
     restart: always
@@ -59,3 +59,7 @@ services:
 volumes:
   images:
   dbvolume:
+
+add this only after the installation
+copy LocalSettings.php from CLI to the SERVER to where wiki.yml is located
+
